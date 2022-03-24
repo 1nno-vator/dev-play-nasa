@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
+import Lottie from 'react-lottie';
+import animationData from './loading-cat.json';
+
 const Container = styled.div`
   display: flex;
-  max-height: 800px;
+  height: 90%;
   justify-contents: center;
   align-items: center;
   flex-direction: column;
@@ -12,35 +15,81 @@ const Container = styled.div`
 
   img {
     display: block;
-    max-width: 800px;
+    max-width: 600px;
+    background: grey;
+  }
+
+  p {
+    width: 60%;
+    word-wrap: word-break;
   }
 `
 
 function App() {
   const [data, setData] = useState({});
+  const [isLoaded, setLoaded] = useState(false);
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true, 
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice'
+    }
+  };
   
   useEffect(() => {
-
-    axios.get('https://api.nasa.gov/planetary/apod?api_key=Iz75e0naUV7pTGptfpd3QCZZa9DKFdaR8P3JNPgc&count=1')
-    .then((response) => {
-      return response.data;
-    }).then((res) => {
-      console.log(res[0]);
-      setData(res[0]);
-    })
-
+    getNasaData()
   }, [])
-  
+
+  const getNasaData = () => {
+    axios.get('https://api.nasa.gov/planetary/apod?api_key=Iz75e0naUV7pTGptfpd3QCZZa9DKFdaR8P3JNPgc&count=1')
+    .then((response) => response.data)
+    .then((res) => setData(res[0]))
+    .then(() => {
+      setTimeout(() => {
+        setLoaded(true)
+      }, 2000)
+    })
+  }
+
+  const LottieStyle = {
+    display: isLoaded ? 'none' : 'block'
+  }
+
+  const NasaApodDisplayStyle = {
+    visibility: !isLoaded ? 'hidden' : 'visible'
+  }
   
   return (
     <Container>
-      <img alt="image" src={data.hdurl}/>
-      <h4>Title</h4>
-      <h1>{data.title}</h1>
-      <h3>Explanation</h3>
-      <p style={{ fontSize: '12px' }}>{data.explanation}</p>
+        <Lottie 
+            options={defaultOptions}
+            height={600}
+            width={600}
+            style={LottieStyle}
+        />
+        <NasaApod
+            url={data.url}
+            title={data.title}
+            explanation={data.explanation}
+            style={NasaApodDisplayStyle}
+        />
+        <button onClick={() => { setLoaded(false); getNasaData() }}>RELOAD</button>
     </Container>
   );
+}
+
+function NasaApod(props) {
+  
+  return (
+    <Container style={props.style}>
+      <img alt="image" src={props.url}/>
+      <h1>{props.title}</h1>
+      <h3>Explanation</h3>
+      <p style={{ fontSize: '12px' }}>{props.explanation}</p>
+    </Container>
+  )
 }
 
 export default App;
