@@ -12,17 +12,6 @@ const Container = styled.div`
   align-items: center;
   flex-direction: column;
   padding: 30px;
-
-  img {
-    display: block;
-    max-width: 600px;
-    background: grey;
-  }
-
-  p {
-    width: 60%;
-    word-wrap: word-break;
-  }
 `
 
 function App() {
@@ -58,24 +47,30 @@ function App() {
   }
 
   const NasaApodDisplayStyle = {
-    visibility: !isLoaded ? 'hidden' : 'visible'
+    visibility: !isLoaded ? 'hidden' : 'visible',
+    textAlign: 'center',
+    margin: '0 auto'
   }
   
   return (
     <Container>
-        <Lottie 
+      {
+        !isLoaded
+          ? <Lottie 
             options={defaultOptions}
             height={600}
             width={600}
             style={LottieStyle}
-        />
-        <NasaApod
-            url={data.url}
-            title={data.title}
-            explanation={data.explanation}
+          />
+          : 
+          <NasaApod
             style={NasaApodDisplayStyle}
-        />
-        <button onClick={() => { setLoaded(false); getNasaData() }}>RELOAD</button>
+            title={data.title}
+            url={data.url}
+            explanation={data.explanation}
+          />
+      }
+        <button style={{ marginTop: '15px' } }onClick={() => { setLoaded(false); getNasaData() }}>RELOAD</button>
     </Container>
   );
 }
@@ -83,12 +78,12 @@ function App() {
 function NasaApod(props) {
   
   return (
-    <Container style={props.style}>
-      <img alt="image" src={props.url}/>
+    <div style={props.style}>
+      <img alt="image" src={props.url} style={{ display: 'block', maxWidth: '600px', background: 'grey', margin: '0 auto' }}/>
       <h1>{props.title}</h1>
       <h3>Explanation</h3>
-      <p style={{ fontSize: '12px' }}>{props.explanation}</p>
-    </Container>
+      <p style={{ width: '60%', fontSize: '12px', margin: '0 auto' }}>{props.explanation}</p>
+    </div>
   )
 }
 
