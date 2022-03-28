@@ -1,18 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-
 import Lottie from 'react-lottie';
 import animationData from './loading-cat.json';
-
-const Container = styled.div`
-  display: flex;
-  height: 90%;
-  justify-contents: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 30px;
-`
 
 function App() {
   const [data, setData] = useState({});
@@ -33,8 +23,18 @@ function App() {
 
   const getNasaData = () => {
     axios.get('https://api.nasa.gov/planetary/apod?api_key=Iz75e0naUV7pTGptfpd3QCZZa9DKFdaR8P3JNPgc&count=1')
-    .then((response) => response.data)
-    .then((res) => setData(res[0]))
+    .then((response) => {
+      return response.data
+    })
+    .then((res) => {
+      
+      console.log(res);
+      const targetText = res[0].explanation;
+      const newText = targetText.replaceAll('. ', '.<br/>')
+      console.log(newText);
+      
+      setData({ ...res[0], explanation: newText })
+    })
     .then(() => {
       setTimeout(() => {
         setLoaded(true)
@@ -53,38 +53,22 @@ function App() {
   }
   
   return (
-    <Container>
-      {
-        !isLoaded
-          ? <Lottie 
-            options={defaultOptions}
-            height={600}
-            width={600}
-            style={LottieStyle}
-          />
-          : 
-          <NasaApod
-            style={NasaApodDisplayStyle}
-            title={data.title}
-            url={data.url}
-            explanation={data.explanation}
-          />
-      }
-        <button style={{ marginTop: '15px' } }onClick={() => { setLoaded(false); getNasaData() }}>RELOAD</button>
-    </Container>
-  );
-}
-
-function NasaApod(props) {
-  
-  return (
-    <div style={props.style}>
-      <img alt="image" src={props.url} style={{ display: 'block', maxWidth: '600px', background: 'grey', margin: '0 auto' }}/>
-      <h1>{props.title}</h1>
-      <h3>Explanation</h3>
-      <p style={{ width: '60%', fontSize: '12px', margin: '0 auto' }}>{props.explanation}</p>
+    <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'  }}>
+      <div 
+        style={{ width: '60%', height: '60%',
+        backgroundImage: `url(${ isLoaded ? data.url : 'https://memegenerator.net/img/instances/38101830/placeholder-an-image-will-be-added-shortly.jpg'})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'contain' 
+        }}>
+      </div>
+      <div style={{ width: '60%', height: '40%' }}>
+        <div style={{ width: '100%', height: '20%', textAlign: 'center' }}>
+            <h1>{isLoaded ? data.title : 'TITLE...'}</h1>
+        </div>    
+        <div style={{ width: '100%', height: '70%', textAlign: 'center' }}>
+          <h6 dangerouslySetInnerHTML={{__html: isLoaded ? data.explanation : 'EXPLANATION...'}}></h6>
+        </div>    
+      </div>
     </div>
-  )
+  );
 }
 
 export default App;
