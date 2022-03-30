@@ -36,21 +36,23 @@ function App() {
       const targetText = res[0].explanation;
       const newText = targetText.replaceAll('. ', '.<br/>')
       
+      getTranslateText(newText);
       setData({ ...res[0], explanation: newText })
       setLoaded(true);
     })
   }
 
-  // const getTranslateText = (origin) => {
-  //   axios.post('http://localhost:3030/node/translate', {
-  //     query: origin
-  //   })
-  //   .then((res) => {
-  //     const resText = res.data.message.result.translatedText;
-  //     const newTranslateText = resText.replaceAll('. ', '.<br/>');
-  //     setTranslateText(newTranslateText);
-  //   })
-  // }
+  const getTranslateText = (origin) => {
+    axios.post('http://localhost:3030/node/translate', {
+      query: origin
+    })
+    .then((res) => {
+      const resText = res.data.message.result.translatedText;
+      const newTranslateText = resText.replaceAll('. ', '.<br/>');
+      console.log(newTranslateText)
+      setTranslateText(newTranslateText);
+    })
+  }
 
 
   const LottieStyle = {
@@ -90,7 +92,7 @@ function App() {
             <h3>&lt;{loadComplete ? data.title : 'TITLE...'} &gt;</h3>
         </div>    
         <div style={{ width: '100%', maxHeight: '70%', textAlign: 'center' }}>
-          <h5 dangerouslySetInnerHTML={{__html: loadComplete ? data.explanation : 'EXPLANATION...'}}></h5>
+          <h5 dangerouslySetInnerHTML={{__html: loadComplete ? (transalteText ? transalteText : data.explanation) : 'EXPLANATION...'}}></h5>
         </div>    
         <div id="google_translate_element" style={{ textAlign: 'center' }}></div>
         <div style={{ textAlign: 'center', margin: '15px' }}>

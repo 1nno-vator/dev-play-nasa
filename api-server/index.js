@@ -1,7 +1,6 @@
 var express = require('express');
 var request = require('request');
 var cors = require('cors');
-const translator = require('google-translate-api');
 var app = express();
 
 var port = process.env.PORT || 3030;
